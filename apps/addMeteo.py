@@ -23,8 +23,38 @@ def getIpAdress():
     return ip
 
 theIp = getIpAdress()
+ #-----------------------------------------
+ #create user's file
+user_input = 'user/'  + theIp +'/input' 
+user_output = 'user/'  + theIp +'/output' 
+if not os.path.exists(user_input):
+    os.makedirs(user_input)
+if not os.path.exists(user_output):
+    os.makedirs(user_output)
+csv_file = user_input + '/donnees.csv'
+seq_file = user_input + '/upload_gene.fasta'
+if os.path.exists(csv_file):
+  os.remove(csv_file)
 
+if os.path.exists(seq_file):
+  os.remove(seq_file)
+
+# create a csv table for gene parameters
+genes_csv = 'user/' + theIp + '/input/parameters.csv'
+if not os.path.exists(genes_csv):
+    with open(genes_csv, 'w') as f:
+        f.write("Gene,Bootstrap value threshold,Robinson and Foulds distance threshold,Sliding Window Size,Step Size\n")
 #-------------------------------------------
+# get all the newick files produced 
+os.chdir('user/' + theIp + '/output/')
+tree_path = os.listdir()
+tree_files = []
+for item in tree_path:
+    if item.endswith("_newick"):
+        tree_files.append(item)
+os.chdir('../../..')
+#---------------------------
+#---------------------------
 # For uploaded dataset
 
 layout = dbc.Container([
@@ -74,6 +104,7 @@ layout = dbc.Container([
     # log
     dbc.Row([
             dbc.Col([
+                html.Hr(),
                 html.Div(logPage.layout),
                 #html.Hr(),
                 ],xs=12, sm=12, md=12, lg=10, xl=10),

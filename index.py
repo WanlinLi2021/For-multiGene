@@ -1,12 +1,13 @@
 import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
-
-
 # Connect to main app.py file
 from app import app
 # Connect to your app pages
 from apps import addMeteo, mainPage, homePage, checkResults, addGene, logPage
+
+
+#------------------------------------
 
 # styling the sidebar
 SIDEBAR_STYLE = {

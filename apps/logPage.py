@@ -14,6 +14,7 @@ def getIpAdress():
     ip = get("https://api.ipify.org").text
     return ip
 theIp = getIpAdress()  
+#-----------------------------------------
  #create user's file
 user_input = 'user/'  + theIp +'/input' 
 user_output = 'user/'  + theIp +'/output' 
@@ -29,6 +30,11 @@ if os.path.exists(csv_file):
 if os.path.exists(seq_file):
   os.remove(seq_file)
 
+# create a csv table for gene parameters
+genes_csv = 'user/' + theIp + '/input/parameters.csv'
+if not os.path.exists(genes_csv):
+    with open(genes_csv, 'w') as f:
+        f.write("Gene,Bootstrap value threshold,Robinson and Foulds distance threshold,Sliding Window Size,Step Size\n")
 #-------------------------------------------
 # get all the newick files produced 
 os.chdir('user/' + theIp + '/output/')
@@ -38,12 +44,7 @@ for item in tree_path:
     if item.endswith("_newick"):
         tree_files.append(item)
 os.chdir('../../..')
-
-# create a csv table for gene parameters
-genes_csv = 'user/' + theIp + '/input/parameters.csv'
-if not os.path.exists(genes_csv):
-    with open(genes_csv, 'w') as f:
-        f.write("Gene,Bootstrap value threshold,Robinson and Foulds distance threshold,Sliding Window Size,Step Size\n")
+#---------------------------
 #------------------------
 card3 = dbc.Card(
     [

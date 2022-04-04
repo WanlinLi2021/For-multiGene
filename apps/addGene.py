@@ -1,5 +1,7 @@
 import dash
 from dash import Dash, html, dcc
+#from dash import dcc
+#from dash import html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.express as px
@@ -17,6 +19,21 @@ def getIpAdress():
     return ip
 theIp = getIpAdress()
     
+ #create user's file
+user_input = 'user/'  + theIp +'/input' 
+user_output = 'user/'  + theIp +'/output' 
+if not os.path.exists(user_input):
+    os.makedirs(user_input)
+if not os.path.exists(user_output):
+    os.makedirs(user_output)
+csv_file = user_input + '/donnees.csv'
+seq_file = user_input + '/upload_gene.fasta'
+if os.path.exists(csv_file):
+  os.remove(csv_file)
+
+if os.path.exists(seq_file):
+  os.remove(seq_file)
+
 #-------------------------------------------
 # create a csv table for gene parameters
 genes_csv = 'user/' + theIp + '/input/parameters.csv'

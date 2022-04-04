@@ -1,5 +1,7 @@
 import dash
 from dash import Dash, html, dcc
+#from dash import dcc
+#from dash import html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.express as px
@@ -16,7 +18,11 @@ def getIpAdress():
     ip = get("https://api.ipify.org").text
     return ip
 theIp = getIpAdress()
-
+# create a csv table for gene parameters
+genes_csv = 'user/' + theIp + '/input/parameters.csv'
+if not os.path.exists(genes_csv):
+    with open(genes_csv, 'w') as f:
+        f.write("Gene,Bootstrap value threshold,Robinson and Foulds distance threshold,Sliding Window Size,Step Size\n")
 #---------------------------------------------
 # Ids
 input_geneName = "input_geneName"
