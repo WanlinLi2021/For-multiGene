@@ -36,15 +36,9 @@ if not os.path.exists(genes_csv):
     with open(genes_csv, 'w') as f:
         f.write("Gene,Bootstrap value threshold,Robinson and Foulds distance threshold,Sliding Window Size,Step Size\n")
 #-------------------------------------------
-# get all the newick files produced 
-os.chdir('user/' + theIp + '/output/')
-tree_path = os.listdir()
-tree_files = []
-for item in tree_path:
-    if item.endswith("_newick"):
-        tree_files.append(item)
-os.chdir('../../..')
-#---------------------------
+meteo_csv = 'user/' + theIp + '/input/meteo.csv'
+if not os.path.exists(meteo_csv):
+    pd.DataFrame(list()).to_csv(meteo_csv)
 #------------------------
 card3 = dbc.Card(
     [

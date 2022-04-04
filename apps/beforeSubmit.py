@@ -31,11 +31,14 @@ if os.path.exists(csv_file):
 if os.path.exists(seq_file):
   os.remove(seq_file)
 
-# create a csv table for gene parameters
+# create csv files for gene and meteo parameters
 genes_csv = 'user/' + theIp + '/input/parameters.csv'
 if not os.path.exists(genes_csv):
     with open(genes_csv, 'w') as f:
         f.write("Gene,Bootstrap value threshold,Robinson and Foulds distance threshold,Sliding Window Size,Step Size\n")
+meteo_csv = 'user/' + theIp + '/input/meteo.csv'
+if not os.path.exists(meteo_csv):
+    pd.DataFrame(list()).to_csv(meteo_csv)
 #-------------------------------------------
 # get all the newick files produced 
 os.chdir('user/' + theIp + '/output/')
@@ -65,7 +68,7 @@ geneTable = dbc.Container([
                             sort_action="none",       # enables data to be sorted per-column by user or not ('none')
                             #sort_mode="single",         # sort across 'multi' or 'single' columns
                             #column_selectable="multi",  # allow users to select 'multi' or 'single' columns
-                            row_selectable="multi",     # allow users to select 'multi' or 'single' rows
+                            #row_selectable="multi",     # allow users to select 'multi' or 'single' rows
                             row_deletable=True,         # choose if user can delete a row (True) or not (False)
                             selected_columns=[],        # ids of columns that user selects
                             selected_rows=[],           # indices of rows that user selects
@@ -100,6 +103,58 @@ geneTable = dbc.Container([
 
 ], fluid=True)
 
+meteoTable = dbc.Container([
+     # table of parameters
+    dbc.Row([
+            dbc.Col([
+                html.Br(),
+                #html.Hr(),
+                html.Div([
+                        dash_table.DataTable(
+                            id='meteo-table',
+                            columns=[
+                                {"name": i, "id": i, "deletable": False, "selectable": False, "hideable": False}
+                                for i in pd.read_csv('user/' + theIp + '/input/meteo.csv').columns ],
+                            data=pd.read_csv('user/' + theIp + '/input/meteo.csv').to_dict('records'),  # the contents of the table
+                            editable=True,              # allow editing of data inside all cells
+                            filter_action="none",     # allow filtering of data by user ('native') or not ('none')
+                            sort_action="none",       # enables data to be sorted per-column by user or not ('none')
+                            #sort_mode="single",         # sort across 'multi' or 'single' columns
+                            #column_selectable="multi",  # allow users to select 'multi' or 'single' columns
+                            #row_selectable="multi",     # allow users to select 'multi' or 'single' rows
+                            row_deletable=True,         # choose if user can delete a row (True) or not (False)
+                            selected_columns=[],        # ids of columns that user selects
+                            selected_rows=[],           # indices of rows that user selects
+                            page_action="native",       # all data is passed to the table up-front or not ('none')
+                            page_current=0,             # page number that user is on
+                            page_size=10,                # number of rows visible per page
+                            style_cell={                # ensure adequate header width when text is shorter than cell's text
+                                'minWidth': 95, 'maxWidth': 95, 'width': 95
+                            },
+                            style_cell_conditional = [ #align text column to left
+                                {
+                                    'if':{'column_id': c},
+                                    'textAlign': 'left'
+                                } for c in ['Gene']
+                            ],
+                            style_data={                # overflow cells' content into multiple lines
+                                'whiteSpace': 'normal',
+                                'height': 'auto'
+                            },
+                            style_header={
+                                'whiteSpace': 'normal',
+                                'height': 'auto'
+                            }
+                        ),
+
+                        #html.Br(),
+                    ]),
+
+            ],xs=12, sm=12, md=12, lg=10, xl=10),
+
+         ],justify='around'),
+
+], fluid=True)
 #-----------------------------------------
 card1 = dbc.Card(
     [
@@ -156,7 +211,7 @@ layout = dbc.Container([
             )
         ),
     dbc.Collapse(
-            html.Div(geneTable),
+            html.Div(meteoTable),
                             
             id = 'forMeteoTable', is_open=False,   # the Id of Collapse
                             ),
@@ -250,31 +305,23 @@ layout = dbc.Container([
 @app.callback(Output('confirmed', 'children'),
               Input('confirm_button','n_clicks'),
               Input('gene-table', "derived_virtual_data"),
-              Input('gene-table', 'derived_virtual_selected_rows'),
-              Input('gene-table', 'derived_virtual_selected_row_ids'),
           )
 
-def save_genesTable(n, all_rows_data,slctd_row_indices, slct_rows_names):
+def save_genesTable(n, all_rows_data):
     print('***************************************************************************')
     print('Data across all pages pre or post filtering: {}'.format(all_rows_data))
-    print('---------------------------------------------')
-    print("Indices of selected rows if part of table after filtering:{}".format(slctd_row_indices))
-    print("Names of selected rows if part of table after filtering: {}".format(slct_rows_names))
     print('*****************------------------------********************************')
-    
+    dff = pd.DataFrame(all_rows_data)
     if n is None:
-        dff = pd.DataFrame(all_rows_data)
+        return dash.no_update
     else:
-        dff = pd.DataFrame(all_rows_data)
-        colors = ['#7FDBFF' if i in slctd_row_indices else '#0074D9'
-              for i in range(len(dff))]
-        dff.to_csv('user/' + theIp + '/input/genes_confirmed.csv',index=False)
-        print(dff)
+        dff.to_csv('user/' + theIp + '/input/parameters.csv',index=False)
+        #print(dff)
         return dcc.Markdown('The genetic parameters have been confirmed',className="card-text"),
 
 @app.callback(Output('confirmed_meteo', 'children'),
               Input('confirm_meteo_button','n_clicks'),
-              State('gene-table', "derived_virtual_data"),)
+              Input('meteo-table', "derived_virtual_data"),)
 
 def save_meteoTable(n, all_rows_data):
     dff = pd.DataFrame(all_rows_data)
