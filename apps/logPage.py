@@ -292,8 +292,6 @@ def save_genesTable(n, all_rows_data,slctd_row_indices, slct_rows_names):
         dff = pd.DataFrame(all_rows_data)
         colors = ['#7FDBFF' if i in slctd_row_indices else '#0074D9'
               for i in range(len(dff))]
-              
-       
         dff.to_csv('user/' + theIp + '/input/genes_confirmed.csv',index=False)
         print(dff)
         return dcc.Markdown('The genetic parameters have been confirmed',className="card-text"),

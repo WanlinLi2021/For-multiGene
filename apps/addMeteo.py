@@ -21,7 +21,7 @@ import subprocess
 import importlib
 import tree_user
 from requests import get
-
+from apps import logPage
 #----------------------------------------
 def getIpAdress():
     ip = get("https://api.ipify.org").text
@@ -129,6 +129,15 @@ layout = dbc.Container([
             ],xs=12, sm=12, md=12, lg=10, xl=10),
 
          ], justify='around'),
+
+    # log
+    dbc.Row([
+            dbc.Col([
+                html.Div(logPage.layout),
+                #html.Hr(),
+                ],xs=12, sm=12, md=12, lg=10, xl=10),
+
+            ], justify='around'),
 
          ], fluid=True)
 
