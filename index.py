@@ -1,7 +1,5 @@
 import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc
-#from dash import dcc
-#from dash import html
 from dash.dependencies import Input, Output
 
 

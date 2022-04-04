@@ -1,19 +1,11 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash_bootstrap_components._components.Row import Row
-#from dash import dcc
-#from dash import html
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output, State
-
 import plotly.express as px
 import pandas as pd
-import pathlib
 from app import app
 import os
-import base64
-import datetime
-import io
 import pipeline
 
 # get relative data folder

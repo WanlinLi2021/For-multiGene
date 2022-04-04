@@ -1,16 +1,11 @@
 import dash
-#from dash import dcc
 from dash import Dash, html, dcc
-#from dash import html
 from dash.dependencies import Input, Output,State
 import dash_bootstrap_components as dbc
 import dash_bio as dashbio
-
 import plotly.express as px
 import pandas as pd
-
 from dash import dash_table
-
 import os
 from Bio import SeqIO, Phylo
 import re

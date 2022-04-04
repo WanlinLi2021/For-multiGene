@@ -1,23 +1,18 @@
 import dash
-#from dash import dcc
 from dash import Dash, html, dcc
-#from dash import html
 from dash.dependencies import Input, Output,State
 import dash_bootstrap_components as dbc
-
 import plotly.express as px
 import pandas as pd
 import pathlib
 from app import app
 from dash import dash_table
 from dash.exceptions import PreventUpdate
-
 import base64
 import datetime
 import io
 import os 
 import subprocess
-
 import importlib
 import tree_user
 from requests import get
@@ -68,52 +63,13 @@ layout = dbc.Container([
                 xs=12, sm=12, md=12, lg=10, xl=10
                 ),
                 ], justify='around'),  # Horizontal:start,center,end,between,around
-    # for Bar Graph or Scatter Plot
-    dbc.Row([
-        dbc.Col([
-             html.Div(id='output-div'),
-                ],# width={'size':3, 'offset':1, 'order':1},
-                xs=12, sm=12, md=12, lg=10, xl=10
-                ),
-            ], justify='around'),  # Horizontal:start,center,end,between,around
-        
-    # another row for Choropleth Map
+    
     dbc.Row([
             dbc.Col([
-                html.Div(id='output-map'),
-                html.Hr()
+                html.Div(id='summary-container1'),
             ],xs=12, sm=12, md=12, lg=10, xl=10),
 
          ],justify='around'),
-
-    # running tree.py and get newick files
-    dbc.Row([
-            dbc.Col([
-                html.Div(id='newick-files-container1'),
-            ],xs=12, sm=12, md=12, lg=10, xl=10),
-
-         ],justify='around'),
-
-    dbc.Row([
-            dbc.Col([
-                html.Div(id='newick-files-container2'),
-            ],xs=12, sm=12, md=12, lg=10, xl=10),
-
-         ],justify='around'),
-
-    dbc.Row([
-            dbc.Col([
-                html.Div(id='newick-files-container3'),
-            ],xs=12, sm=12, md=12, lg=10, xl=10),
-
-         ],justify='around'),
-
-    dbc.Row([
-            dbc.Col([
-                html.Div(id='newick-files-container4'),
-            ],xs=12, sm=12, md=12, lg=10, xl=10),
-
-         ], justify='around'),
 
     # log
     dbc.Row([
@@ -183,28 +139,8 @@ def parse_contents(contents, filename, date):
                 dbc.Row([
                         dbc.Col([
                             html.Div([
-                                html.H5(filename),
+                                #html.H5(filename),
                                 #html.H6(datetime.datetime.fromtimestamp(date)),
-                                html.P("Inset X axis data"),
-                                dcc.Dropdown(id='xaxis-data',
-                                            options=[{'label':x, 'value':x} for x in df.columns]),
-                                html.P("Inset Y axis data"),
-                                dcc.Dropdown(id='yaxis-data',
-                                            options=[{'label':x, 'value':x} for x in df.columns]),
-                                html.P("Select data for choropleth map"),
-                                dcc.Dropdown(id='map-data',
-                                            options=[{'label':x, 'value':x} for x in df.columns]),
-                                html.Br(),
-                                dcc.RadioItems(id='choose-graph-type',
-                                                options=[
-                                                    {'label': 'Bar Graph', 'value': 'Bar'},
-                                                    {'label': 'Scatter Plot', 'value': 'Scatter'}
-                                                ],
-                                                value='Bar'
-                                            ),  
-                                html.Br(),
-                                html.Button(id="submit-button", children="Create Graph"),
-                                html.Hr(),
                             # parameters for creating phylogeography trees
                                 html.H2('Create Phylogeography Trees', style={"textAlign": "center"}),  #title
                                 html.H4("Inset the name of the column containing the sequence Id"),
@@ -217,9 +153,7 @@ def parse_contents(contents, filename, date):
                                             labelStyle={'display': 'inline-block','marginRight':'20px'}
                                         ),
                                 html.Br(),
-                                html.Button(id="submit-forTree", children="Create Newick files"),  
-                                html.Hr(),
-
+                                html.Button(id="submit-forTree", children="Submit"),  
                                 ])
                         ],xs=12, sm=12, md=12, lg=10, xl=10),
                     ],no_gutters=True, justify='around'), 
@@ -242,139 +176,26 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
             zip(list_of_contents, list_of_names, list_of_dates)]
         return children
 
-@app.callback(Output('output-div', 'children'),
-              Input('submit-button','n_clicks'),
-              State('choose-graph-type','value'),
-              State('stored-data','data'),
-              State('xaxis-data','value'),
-              State('yaxis-data', 'value')
-              )
-def make_graphs(n, graph_type, data, x_data, y_data):
-    if n is None:
-        return dash.no_update
-    else:
-        if graph_type == 'Bar':
-            bar_fig = px.bar(data, x=x_data, y=y_data)
-        if graph_type =='Scatter':
-            bar_fig = px.scatter(data, x=x_data, y=y_data)
-        # print(data)
-        return dcc.Graph(figure=bar_fig)
-
-# Choropleth Map
-@app.callback(
-    Output('output-map','children'),
-    Input('submit-button','n_clicks'),
-    State('stored-data','data'),
-    State('map-data', 'value')
-)
-
-def update_output(num_clicks, data, val_selected):
-    #print(data[0].keys())
-    if num_clicks is None:
-        return dash.no_update
-    else:
-        if "iso_alpha" in data[0].keys():
-
-            fig = px.choropleth(data, locations="iso_alpha",
-                                color=val_selected,
-                                projection='natural earth',
-                                color_continuous_scale=px.colors.sequential.Turbo)
-
-            fig.update_layout(title=dict(font=dict(size=28),x=0.5,xanchor='center'),
-                            margin=dict(l=60, r=60, t=50, b=50))
-
-            return dcc.Graph(figure=fig)
-
 # phylogeography trees : parameters
 @app.callback(
-    Output('newick-files-container1','children'),
-    Input('submit-forTree','n_clicks'),
-    State('upload-data', 'filename')
-)
-def update_output(n,file_name):
-    if n is None:
-        return dash.no_update
-    else:
-        return dcc.Markdown('You have selected file:  **{}**'.format("; ".join(file_name)))
-
-@app.callback(
-    Output('newick-files-container2','children'),
-    Input('submit-forTree','n_clicks'),
-    State('col-specimens','value')
-)
-def update_output(n,specimen):
-    if n is None:
-        return dash.no_update
-    else:
-        return dcc.Markdown('In this file, the name of column containing the sequence Id is :  **{}**'.format(specimen))
-
-@app.callback(
-    Output('newick-files-container3','children'),
-    Input('submit-forTree','n_clicks'),
-    State('col-analyze', 'value')
-)
-def update_output(n,names):
-    if n is None:
-        return dash.no_update
-    else:
-        return dcc.Markdown('In order to create reference trees, the columns selected are:  **{}**'.format("; ".join(names)))
-    
-# phylogeography trees : newick files
-@app.callback(
-    Output('newick-files-container4','children'),
+    Output('summary-container1','children'),
     Input('submit-forTree','n_clicks'),
     State('upload-data', 'filename'),
     State('col-specimens','value'),
     State('col-analyze', 'value')
 )
-def update_output(n,file_name,specimen,names):
+def update_output(n,file_name,specimen, col_names):
     if n is None:
         return dash.no_update
     else:
-        col_names = [specimen] + list(names)
-        tree_user.create_tree(file_name[0], list(col_names)) # run tree.py
-        os.chdir('user/' + theIp + '/output/')
-        tree_path = os.listdir()
-        tree_files = []
-        for item in tree_path:
-            if item.endswith("_newick"):
-                tree_files.append(item)
-                #print(item)
-        #print(tree_files)
-        os.chdir('../../..')
-
-        outputs_container = html.Div([
-            html.Hr(),
-            html.H6('output files:'),
-            html.H5("; ".join(tree_files)),
-            dcc.Input(id = "input_fileName", type = "text", 
-                    placeholder = "Enter the name of the file to be downloaded", 
-                    style= {'width': '68%','marginRight':'20px'}),
-            dbc.Button(id='btn-newick',
-                            children=[html.I(className="fa fa-download mr-1"), "Download newick files"],
-                            color="info",
-                            className="mt-1"
-                                    ),
-            dcc.Download(id="download-newick"),
-
-        ])
-
-        return outputs_container
-
-# for download buttonv
-@app.callback(
-    Output("download-newick", "data"),
-    Input("btn-newick", "n_clicks"),
-    State('input_fileName','value'), 
-    prevent_initial_call=True
-)
-def func(n_clicks, fileName):
-    if n_clicks is None:
-        return dash.no_update
-    else:
-        PATH = pathlib.Path(__file__).parent
-        DATA_PATH = PATH.joinpath("../user/" + theIp + "/output/").resolve()
-        print(fileName)
-        print(DATA_PATH.joinpath(fileName))
-        return dcc.send_file(DATA_PATH.joinpath(fileName))
-        
+        summary_container = dbc.Card([
+            dbc.CardBody([
+                html.H4("Done", className="card-title"),
+                dcc.Markdown('You have selected file:  **{}**'.format("; ".join(file_name))),
+                dcc.Markdown('In this file, the name of column containing the sequence Id is :  **{}**'.format(specimen)),
+                dcc.Markdown('In order to create reference trees, the columns selected are:  **{}**'.format("; ".join(col_names)))
+            ]),
+    ],
+    style={"width": "60%"},       #50rem
+),
+        return summary_container

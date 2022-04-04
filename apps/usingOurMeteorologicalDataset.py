@@ -1,7 +1,5 @@
 import dash
-#from dash import dcc
 from dash import Dash, html, dcc
-#from dash import html
 from dash.dependencies import Input, Output,State
 import dash_bootstrap_components as dbc
 import plotly.express as px
@@ -10,10 +8,6 @@ import pathlib
 from app import app
 from dash import dash_table
 from dash.exceptions import PreventUpdate
-
-import base64
-import datetime
-import io
 import tree
 import os
 
