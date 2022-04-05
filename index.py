@@ -36,7 +36,7 @@ sidebar = html.Div(
         ),
         dbc.Nav(
             [dbc.NavLink("Home", href='/apps/homePage', active="exact"),
-            dbc.NavLink("Uploaded Datasets", href='/apps/mainPage', active="exact"),
+            dbc.NavLink("Upload Datasets", href='/apps/mainPage', active="exact"),
             dbc.NavLink("Add Meteorological Data", href='/apps/addMeteo', active="exact"),
             dbc.NavLink("Add genetic data", href='/apps/addGene', active="exact"),
             dbc.NavLink("Log Page", href='/apps/logPage', active="exact"),

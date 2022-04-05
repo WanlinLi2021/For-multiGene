@@ -199,6 +199,7 @@ card3 = dbc.Card(
             html.H4("Submit & Run iPhyloGeo", className="card-title"),
             html.Button(id= "run_button", children="Submit"),
             html.Br(),
+            html.Br(),
             html.Div(id="change_page"),
             ]
         ),
@@ -226,7 +227,12 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.Br(),
-            html.Button(id= "confirm_button", children="Confirm genetic parameters"),
+            dbc.Button(id= "confirm_button", children="Confirm genetic parameters",
+                        color="success", className="me-1"),
+            html.Br(),
+            html.Br(),
+            dcc.Link(dbc.Button(children=[html.I(className="fa fa-arrow-circle-o-up mr-1"),'Add more genetic datasets'],
+                        color="info", className="me-1"), href='/apps/addGene',refresh=False),
             html.Br(),
             #html.Hr(),
         ],# width={'size':3, 'offset':1, 'order':1},
@@ -245,7 +251,7 @@ layout = dbc.Container([
      #html.Br(),
     dbc.CardHeader(
             dbc.Button(
-                "Meteorological dataset and parameters to be analyzed",
+                children = "Meteorological dataset and parameters to be analyzed",
                 color="link",
                 id="button-meteoTable",
             )
@@ -259,7 +265,12 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.Br(),
-            html.Button(id= "confirm_meteo_button", children="Confirm meteorological parameters"),
+            dbc.Button(id= "confirm_meteo_button", children= "Confirm meteorological parameters",
+                        color="success", className="me-1"),
+            html.Br(),
+            html.Br(),
+            dcc.Link(dbc.Button(children=[html.I(className="fa fa-arrow-circle-o-up mr-1"),'Re-Upload meteorological dataset'],
+                        color="info", className="me-1"), href='/apps/addMeteo',refresh=False), 
             html.Br(),
             #html.Hr(),
         ],# width={'size':3, 'offset':1, 'order':1},
@@ -279,7 +290,7 @@ layout = dbc.Container([
      #html.Br(),
     dbc.CardHeader(
             dbc.Button(
-                "Receive analysis results by email",
+                [html.I(className="fa fa-envelope-o mr-1"),"Receive analysis results by email"],
                 color="link",
                 id="button-email",
             )
@@ -400,4 +411,5 @@ def confirmSend(n):
               
 def confirmSend(n):
     if n:
-        return dcc.Link('Run iPhyloGeo', href='/apps/run',refresh=False)       
+        return dcc.Link(dbc.Button(children=[html.I(className="fa fa-play-circle-o mr-1"),'Run iPhyloGeo'],
+                        color='info',className='mt-1',size="lg"), href='/apps/run',refresh=False)       

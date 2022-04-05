@@ -2,6 +2,7 @@ import dash
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+from numpy import size
 import plotly.express as px
 import pandas as pd
 from app import app
@@ -45,4 +46,43 @@ for item in tree_path:
         tree_files.append(item)
 os.chdir('../../..')
 #-------------------------------------
-layout = html.H4("This is run page", className="card-title")
+layout = dbc.Container([
+    html.H1('Phylogenetic Tree', style={"textAlign": "center"}),  #title
+
+    dbc.Row([
+            dbc.Col([
+                html.Br(),
+                dbc.Button(id = "run-button",
+                        children=[html.I(className="fa fa-cog mr-1"),'Please click here'],
+                        color='info',className='d-grid gap-2 col-12 mx-auto',size="lg")
+            ],xs=12, sm=12, md=12, lg=10, xl=10),
+            
+            ],justify='around'),
+
+    dbc.Row([
+            dbc.Col([
+                html.Br(),
+                html.Br(),
+                html.Div(id="run-result"),
+            ],xs=12, sm=12, md=12, lg=10, xl=10),
+            
+            ],justify='around'),
+            
+
+    
+   
+   
+    
+], fluid=True)
+
+#---------------------------------------------
+@app.callback(Output('run-result', 'children'),
+              Input('run_button','n_clicks'),
+              )
+
+def run_pipeline(n):
+    if n is None:
+        return dash.no_update
+    else:
+        waiting = dcc.Markdown('The meteorological parameters have been confirmed',className="card-text"),
+        return waiting
