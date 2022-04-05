@@ -110,9 +110,6 @@ layout = dbc.Container([
          ], fluid=True)
 
 
-        
-    
-
 #---------------------------------------------------------
 
 def parse_contents(contents, filename, date):

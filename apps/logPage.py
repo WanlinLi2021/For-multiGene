@@ -39,6 +39,20 @@ if not os.path.exists(genes_csv):
 meteo_csv = 'user/' + theIp + '/input/meteo.csv'
 if not os.path.exists(meteo_csv):
     pd.DataFrame(list()).to_csv(meteo_csv)
+
+#-------------------------------------------
+# update csv
+#os.chdir('user/' + theIp + '/input/')
+#tree_path = os.listdir()
+#for item in tree_path:
+#    if item.endswith("csv"):
+#        df_gene = pd.read_csv('parameters.csv')
+#        df_meteo = pd.read_csv('meteo.csv')
+#os.chdir('../../..')
+#-------------------------------------
+#df_gene = pd.read_csv('user/' + theIp + '/input/parameters.csv')
+#df_meteo = pd.read_csv('user/' + theIp + '/input/meteo.csv')
+
 #---------------------------
 geneTable = dbc.Container([
      # table of parameters
@@ -52,8 +66,8 @@ geneTable = dbc.Container([
                             columns=[
                                 {"name": i, "id": i, "deletable": False, "selectable": False, "hideable": False}
                                 for i in pd.read_csv('user/' + theIp + '/input/parameters.csv').columns ],
-                            data=pd.read_csv('user/' + theIp + '/input/parameters.csv').to_dict('records'),  # the contents of the table
-                            editable=True,              # allow editing of data inside all cells
+                            data= pd.read_csv('user/' + theIp + '/input/parameters.csv').to_dict('records'),  # the contents of the table
+                            editable=False,              # allow editing of data inside all cells
                             filter_action="none",     # allow filtering of data by user ('native') or not ('none')
                             sort_action="none",       # enables data to be sorted per-column by user or not ('none')
                             #sort_mode="single",         # sort across 'multi' or 'single' columns
@@ -105,8 +119,8 @@ meteoTable = dbc.Container([
                             columns=[
                                 {"name": i, "id": i, "deletable": False, "selectable": False, "hideable": False}
                                 for i in pd.read_csv('user/' + theIp + '/input/meteo.csv').columns ],
-                            data=pd.read_csv('user/' + theIp + '/input/meteo.csv').to_dict('records'),  # the contents of the table
-                            editable=True,              # allow editing of data inside all cells
+                            data= pd.read_csv('user/' + theIp + '/input/meteo.csv').to_dict('records'),  # the contents of the table
+                            editable=False,              # allow editing of data inside all cells
                             filter_action="none",     # allow filtering of data by user ('native') or not ('none')
                             sort_action="none",       # enables data to be sorted per-column by user or not ('none')
                             #sort_mode="single",         # sort across 'multi' or 'single' columns
@@ -184,7 +198,8 @@ card3 = dbc.Card(
                     ),
             html.H4("Submit & Run iPhyloGeo", className="card-title"),
             html.Button(id= "run_button", children="Submit"),
-            html.Div(id='change_page')
+            html.Br(),
+            html.Div(id="change_page"),
             ]
         ),
     ],
@@ -385,4 +400,4 @@ def confirmSend(n):
               
 def confirmSend(n):
     if n:
-        return dcc.Link('Run iPhyloGeo', href='/apps/run')       
+        return dcc.Link('Run iPhyloGeo', href='/apps/run',refresh=False)       

@@ -177,6 +177,16 @@ layout = dbc.Container([
            xs=12, sm=12, md=12, lg=10, xl=10),
         
     ], justify='around'),
+    # output fasta
+    dbc.Row([
+        dbc.Col([
+            #html.Hr(),
+            #html.Br(),
+            html.Div(id='output-fasta'),
+        ],# width={'size':3, 'offset':1, 'order':1},
+           xs=12, sm=12, md=12, lg=10, xl=10
+        ),
+    ],justify='around'),  # Horizontal:start,center,end,between,around
     
     ], fluid=True),
 
@@ -190,9 +200,10 @@ layout = dbc.Container([
     State(RF_slider,'value'),
     State(input_windowSize,'value'),
     State(input_stepSize,'value'),
+    State(upload_data, 'filename'),
     )
 
-def update_output(n_clicks, gene_name, bootstrap_threshold, rf_threshold, window_size, step_size):
+def update_output(n_clicks, gene_name, bootstrap_threshold, rf_threshold, window_size, step_size,filename):
     if n_clicks is None:
         return dash.no_update
     else:
@@ -202,6 +213,11 @@ def update_output(n_clicks, gene_name, bootstrap_threshold, rf_threshold, window
             writer_object = writer(f_object)
             writer_object.writerow(list)
             f_object.close()
+        #print(filename[0])
+        old_name = 'user/' + theIp + '/input/' + filename[0]
+        new_name = 'user/' + theIp + '/input/' + gene_name +'.fasta'
+        if gene_name != '':
+            os.rename(old_name,new_name)
         # display    
         output_container = dbc.Card([
             #dbc.CardImg(src="/assets/trees-img.jpg", top=True),
@@ -280,7 +296,7 @@ def parse_fasta_contents(contents, filename, date):
         if 'fasta' in filename:
             # Assume that the user uploaded a fasta file
             seq_upload = decoded.decode('utf-8')
-            with open("user/" + theIp + "/input/upload_gene.fasta", "w") as f:
+            with open("user/" + theIp + "/input/"+ filename, "w") as f:
                 f.write(seq_upload)
 
             return html.Div([
@@ -311,7 +327,8 @@ def parse_fasta_contents(contents, filename, date):
 @app.callback(Output('output-fasta', 'children'),
               Input(upload_data, 'contents'),
               State(upload_data, 'filename'),
-              State(upload_data, 'last_modified'))
+              State(upload_data, 'last_modified'),
+              )
 def update_output(list_of_contents, list_of_names, list_of_dates):
     if list_of_contents is not None:
         children = [
