@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 # Connect to main app.py file
 from app import app
 # Connect to your app pages
-from apps import addMeteo, mainPage, homePage, checkResults, addGene, logPage
+from apps import addMeteo, mainPage, homePage, checkResults, addGene, logPage, run
 
 
 #------------------------------------
@@ -40,6 +40,7 @@ sidebar = html.Div(
             dbc.NavLink("Add Meteorological Data", href='/apps/addMeteo', active="exact"),
             dbc.NavLink("Add genetic data", href='/apps/addGene', active="exact"),
             dbc.NavLink("Log Page", href='/apps/logPage', active="exact"),
+            dbc.NavLink("Run iPhyloGeo", href='/apps/run', active="exact"),
             dbc.NavLink("Check Results", href='/apps/checkResults', active="exact"),
             ],
             vertical=True,
@@ -74,6 +75,8 @@ def display_page(pathname):
         return addGene.layout
     if pathname == '/apps/logPage':
         return logPage.layout
+    if pathname == '/apps/run':
+        return run.layout
     else:
         return homePage.layout 
 

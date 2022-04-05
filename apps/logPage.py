@@ -39,17 +39,7 @@ if not os.path.exists(genes_csv):
 meteo_csv = 'user/' + theIp + '/input/meteo.csv'
 if not os.path.exists(meteo_csv):
     pd.DataFrame(list()).to_csv(meteo_csv)
-#-------------------------------------------
-# get all the newick files produced 
-os.chdir('user/' + theIp + '/output/')
-tree_path = os.listdir()
-tree_files = []
-for item in tree_path:
-    if item.endswith("_newick"):
-        tree_files.append(item)
-os.chdir('../../..')
 #---------------------------
-
 geneTable = dbc.Container([
      # table of parameters
     dbc.Row([
@@ -161,8 +151,8 @@ card1 = dbc.Card(
         dbc.CardImg(src="/assets/climate.jpg", top=True),
         dbc.CardBody(
             [
-                html.H4("Add meteorological data", className="card-title"),
-                dbc.CardLink("Add dataset", href="addMeteo"),
+            html.H4("Add meteorological data", className="card-title"),
+            dbc.CardLink("Add dataset", href="addMeteo"),
             ]
         ),
     ],
@@ -174,9 +164,9 @@ card2 = dbc.Card(
         dbc.CardImg(src="/assets/dna.jpg", top=True),
         dbc.CardBody(
             [
-                html.H4("Add genetic data", className="card-title"),
+            html.H4("Add genetic data", className="card-title"),
                
-                dbc.CardLink("Add dataset", href="addGene"),
+            dbc.CardLink("Add dataset", href="addGene"),
             ]
         ),
     ],
@@ -188,9 +178,13 @@ card3 = dbc.Card(
         dbc.CardImg(src="/assets/trees-img.jpg", top=True),
         dbc.CardBody(
             [
-                html.H4("Submit & Run iPhyloGeo", className="card-title"),
-               
-                html.Button(id= "run_button", children="Run"),
+            dcc.ConfirmDialog(
+                id='confirm-run',
+                message='Note: Please make sure that all parameters have been set and confirmed',
+                    ),
+            html.H4("Submit & Run iPhyloGeo", className="card-title"),
+            html.Button(id= "run_button", children="Submit"),
+            html.Div(id='change_page')
             ]
         ),
     ],
@@ -376,3 +370,19 @@ def toggle_collapse(n, is_open):
     if n:
         return not is_open
     return is_open
+#confirm dialoge
+@app.callback(Output('confirm-run', 'displayed'),
+              Input('run_button','n_clicks'),)
+              
+def confirmSend(n):
+    if n is None:
+        return False
+    else:
+        return True
+#change run page
+@app.callback(Output('change_page', 'children'),
+              Input('confirm-run','submit_n_clicks'),)
+              
+def confirmSend(n):
+    if n:
+        return dcc.Link('Run iPhyloGeo', href='/apps/run')       

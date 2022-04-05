@@ -101,7 +101,7 @@ layout = dbc.Container([
     dbc.Row([
             dbc.Col([
                 html.Hr(),
-                html.Div(logPage.layout),
+                dcc.Link(html.Button("Finished"), href="/apps/logPage", refresh=True),
                 #html.Hr(),
                 ],xs=12, sm=12, md=12, lg=10, xl=10),
 

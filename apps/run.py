@@ -45,4 +45,4 @@ for item in tree_path:
         tree_files.append(item)
 os.chdir('../../..')
 #-------------------------------------
-layout = html.H4("Welcome to the Tahiri Lab", className="card-title")
+layout = html.H4("This is run page", className="card-title")

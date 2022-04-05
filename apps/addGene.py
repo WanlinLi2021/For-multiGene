@@ -11,7 +11,7 @@ import os
 import base64
 from Bio import SeqIO
 from requests import get
-from apps import geneParam, logPage
+from apps import geneParam
 
 #----------------------------------------
 def getIpAdress():
@@ -74,17 +74,17 @@ layout = dbc.Container([
             html.Br(),
             html.Hr(),
         ], #width={'size':3, 'offset':1, 'order':1},
-           xs=12, sm=12, md=12, lg=10, xl=10
+           xs=12, sm=12, md=12, lg=5, xl=5
+        ),
+        dbc.Col([
+            html.Br(),
+            dcc.Link(html.Button("Finished"), href="/apps/logPage", refresh=True),
+            html.Br(),
+            html.Hr(),
+        ], #width={'size':3, 'offset':1, 'order':1},
+           xs=12, sm=12, md=12, lg=5, xl=5
         ),
     ], justify='around'),
-    # log
-    dbc.Row([
-            dbc.Col([
-                html.Div(logPage.layout),
-                #html.Hr(),
-                ],xs=12, sm=12, md=12, lg=10, xl=10),
-
-            ], justify='around'),
     
 ], fluid=True)
 
