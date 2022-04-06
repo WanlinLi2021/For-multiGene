@@ -1,14 +1,14 @@
+from unittest import result
 import dash
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-from numpy import size
-import plotly.express as px
 import pandas as pd
 from app import app
 from requests import get
-from dash import dash_table
 import os 
+import time
+import dash_extensions as de
 
 #----------------------------------------
 def getIpAdress():
@@ -61,9 +61,15 @@ layout = dbc.Container([
 
     dbc.Row([
             dbc.Col([
+                html.Div(id="waiting-container"),
+            ],xs=12, sm=12, md=12, lg=10, xl=10),
+            
+            ],justify='around'),
+
+    dbc.Row([
+            dbc.Col([
                 html.Br(),
-                html.Br(),
-                html.Div(id="run-result"),
+                html.Div(id="result-container"),
             ],xs=12, sm=12, md=12, lg=10, xl=10),
             
             ],justify='around'),
@@ -76,13 +82,27 @@ layout = dbc.Container([
 ], fluid=True)
 
 #---------------------------------------------
-@app.callback(Output('run-result', 'children'),
-              Input('run_button','n_clicks'),
+@app.callback(Output('waiting-container', 'children'),
+              Input('run-button','n_clicks'),
               )
-
 def run_pipeline(n):
     if n is None:
         return dash.no_update
     else:
-        waiting = dcc.Markdown('The meteorological parameters have been confirmed',className="card-text"),
+        # Setup options.
+        url = "https://assets9.lottiefiles.com/packages/lf20_YXD37q.json"
+        options = dict(loop=True, autoplay=True, rendererSettings=dict(preserveAspectRatio='xMidYMid slice'))
+        waiting = de.Lottie(options=options, width="25%", height="25%", url=url)
         return waiting
+
+@app.callback(Output('result-container', 'children'),
+              Input('run-button','n_clicks'),
+              )
+def run_pipeline(n):
+    if n is None:
+        return dash.no_update
+    else:
+        time.sleep(5)
+        result = dcc.Link(dbc.Button(children=[html.I(className="fa fa-th-list mr-1"),'CheckResults'],
+                        color='success',className='d-grid gap-2 col-12 mx-auto',size="lg"), href='/apps/checkResults',refresh=False)  
+        return result
